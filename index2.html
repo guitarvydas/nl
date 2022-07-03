@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html>
+<head>
+<style>
+textarea {
+}
+</style>
+</head>
+<body>
+
+<h1>Identity Parse for NL (NewLang)</h1>
+
+<p>source:</p>
+<textarea id="src" rows="7" cols="90" placeholder="src" style="background-color:oldlace;">
+:const cache :to :arr 0 , 1 :end
+:fn fibonacci num :do
+  :if cache :of length > num :do
+    :return cache :of at :call num :end
+  :end
+  :return fibonacci :call num :sub 1 :end :add fibonacci :call sum :sub 2 :end
+:end
+</textarea>
+
+
+<p>output:</p>
+<textarea id="output" rows="7" cols="90" placeholder="transpiled"  readonly style="background-color:whitesmoke;">
+</textarea>
+<br>
+<br>
+<p id="status" > READY </p>
+<br>
+<button onclick="baseline ()">Test</button>
+<br>
+<br>
+<br>
+<hr>
+<p>detailed layer...</p>
+<p>macro grammar and re-formatter and generated JavaScript semantics (for Ohm-JS):</p>
+<textarea id="macrogrammar" rows="13" cols="40" placeholder="macro grammar" style="background-color:oldlace;">
+NLLang {
+TopLevel = (ConstDeclaration | FunctionDeclaration)+
+ConstDeclaration = ":const" ident ":to" Expression
+FunctionDeclaration = ":fn" ident Formals Block
+
+Formals = ident*
+
+Primary =
+  | digit+ -- number
+  | ":arr" ListOf<Expression, ","> ":end" -- arrayliteral
+  | ident -- variable
+Expression =
+  | Expression ":of" Expression    -- fieldaccess
+  | Expression Operator Expression -- operation
+  | Expression ":call" Expression* ":end" -- functioncall
+  | Primary -- primary
+Operator =
+  | ":sub"
+  | ":add"
+  | ">"
+
+Phrase =
+  | IfPhrase
+  | ReturnPhrase
+IfPhrase = ":if" Expression Block
+ReturnPhrase = ":return" Expression
+
+Block = ":do" Phrase+ ":end"
+
+FieldName = ident
+ident = identFirst identRest*
+identFirst = letter | "_"
+identRest = digit | identFirst
+}
+
+
+</textarea>
+<textarea id="macrofmt" rows="13" cols="40" placeholder="macro fmt" style="background-color:oldlace;">
+TopLevel [x] = [[${x}]]
+ConstDeclaration [kconst ident kto expression] = [[~{kconst} ~{ident} ~{kto} ~{expression}]]
+FunctionDeclaration [kfn ident Formals Block] = [[~{kfn} ~{ident} ~{Formals} ~{Block}]]
+
+Formals [@ident] = [[~{ident}]]
+
+Primary_number [@digits] = [[~{digits}]]
+Primary_arrayliteral [karr Expressions kend] = [[~{karr} ~{Expressions} ~{kend}]]
+
+Expression_fieldaccess [e1 op e2] = [[~{e1} ~{op} ~{e2}]]
+Expression_operation [e1 op e2] = [[~{e1} ~{op} ~{e2}]]
+Expression_functioncall [e1 kcall @Formals kend] = [[~{e1} ~{kcall} ~{Formals} ~{kend}]]
+Expression_primary [Primary] = [[~{Primary}]]
+
+Operator [k] = [[~{k}]]
+
+Phrase [x] = [[~{x}]]
+
+IfPhrase [kif Expression Block] = [[~{kif} ~{Expression} ~{Block}]]
+ReturnPhrase [kreturn Expression] = [[~{kreturn} ~{Expression}]]
+
+Block [kdo @Phrase kend] = [[~{kdo} ~{Phrase} ~{kend}]]
+
+FieldName [ident] = [[~{ident}]]
+
+ident [identFirst @identRest] = [[~{identFirst}~{identRest}]]
+identFirst [c] = [[~{c}]]
+identRest [c] = [[~{c}]]
+
+NonemptyListOf [x @xs @cs] = [[~{x}~{xs}~{cs}]]
+
+</textarea>
+</textarea>
+<textarea id="semjs" rows="13" cols="40" placeholder="generated JS semantics" style="background-color:whitesmoke;">
+</textarea>
+
+<!-- Ohm-JS -->
+<script src="https://unpkg.com/ohm-js@16/dist/ohm.min.js"></script>
+
+
+<!-- Macro preprocessor -->
+<script src="mac.js"></script>
+
+
+<script>
+  function fixup (s) {
+      return s
+          .replace (/~{/g, '${');
+  }
+
+  function baseline () {
+      let src = document.getElementById('src').value;
+      // for debugging fmt specifications, see ../fmt shorthand transpiler
+      try {
+          var grammar = document.getElementById('macrogrammar').value;
+          var fmt = document.getElementById('macrofmt').value;
+          let [success, expanded, jssemantics] = expand1 (src, grammar, fmt, fixup);
+          document.getElementById('output').value = expanded;
+          if (success) {
+              document.getElementById('status').innerHTML = "OK " + Date ();
+              document.getElementById('semjs').innerHTML = jssemantics;
+          } else {
+              document.getElementById('status').innderHTML = "FAILED " + Date ();
+          }
+      } catch (err) {
+          document.getElementById('status').innerHTML = "parse FAILED: " + err.message + Date ();
+      }
+  }
+
+  </script>
+</body>
+</html>
+
+

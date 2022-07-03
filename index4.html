@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html>
+<head>
+<style>
+textarea {
+}
+</style>
+</head>
+<body>
+
+<h1>Optimizer - Using Macros (Peephole)</h1>
+
+<p>source:</p>
+<textarea id="src" rows="7" cols="90" placeholder="src" style="background-color:oldlace;">
+
+const cache = [0,1] ;
+function fibonacci (num) {
+if (cache.length  >  num) {
+return cache.at (num);
+}
+return fibonacci (num - 1) + fibonacci (sum - 2);
+}</textarea>
+
+
+<p>output:</p>
+<textarea id="output" rows="10" cols="90" placeholder="transpiled"  readonly style="background-color:whitesmoke;">
+</textarea>
+<br>
+<br>
+<p id="status" > READY </p>
+<br>
+<button onclick="baseline ()">Test</button>
+<br>
+<br>
+<br>
+<hr>
+<p>detailed layer...</p>
+<p>macro grammar and re-formatter and generated JavaScript semantics (for Ohm-JS):</p>
+<textarea id="macrogrammar" rows="13" cols="40" placeholder="macro grammar" style="background-color:oldlace;">
+NLPeepholer {
+top = peephole+
+peephole =
+  | applySyntactic<AtFunctionCall>
+  | any
+AtFunctionCall = "." "at" "(" Arg* ")"
+Arg = 
+  | "(" Arg* ")"  -- nested
+  | ~"(" ~")" any -- basic
+}
+</textarea>
+<textarea id="macrofmt" rows="13" cols="40" placeholder="macro fmt" style="background-color:oldlace;">
+top [@peephole] = [[~{peephole}]]
+peephole [x] = [[~{x}]]
+AtFunctionCall [kdot kat klp @Args krp] = [[\[~{Args}\] ]]
+Arg_nested [klp @Args krp] = [[~{klp}~{Args}~{krp}]]
+Arg_basic [c] = [[~{c}]]
+</textarea>
+<textarea id="semjs" rows="13" cols="40" placeholder="generated JS semantics" style="background-color:whitesmoke;">
+</textarea>
+
+<!-- Ohm-JS -->
+<script src="https://unpkg.com/ohm-js@16/dist/ohm.min.js"></script>
+
+
+<!-- Macro preprocessor -->
+<script src="mac.js"></script>
+
+
+<script>
+  function fixup (s) {
+      return s
+          .replace (/~{/g, '${');
+  }
+
+  function baseline () {
+      let src = document.getElementById('src').value;
+      // for debugging fmt specifications, see ../fmt shorthand transpiler
+      try {
+          var grammar = document.getElementById('macrogrammar').value;
+          var fmt = document.getElementById('macrofmt').value;
+          let [success, expanded, jssemantics] = expand1 (src, grammar, fmt, fixup);
+          document.getElementById('output').value = expanded;
+          if (success) {
+              document.getElementById('status').innerHTML = "OK " + Date ();
+              document.getElementById('semjs').innerHTML = jssemantics;
+          } else {
+              document.getElementById('status').innderHTML = "FAILED " + Date ();
+          }
+      } catch (err) {
+          document.getElementById('status').innerHTML = "parse FAILED: " + err.message + Date ();
+      }
+  }
+
+  </script>
+</body>
+</html>
+
+

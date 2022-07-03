@@ -1,0 +1,9 @@
+NLLang {
+TopLevel = (ConstDecl | FunctionDecl)+
+ConstDecl = ":const" name ":to" Operand ":end"
+Operand =
+  | digit+ -- number
+  | ":arr" ListOf<Number, ","> ":end" -- arrayinit
+  | FunctionCall -- functioncall
+}
+

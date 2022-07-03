@@ -1,0 +1,30 @@
+TopLevel [x] = [[${x}]]
+ConstDeclaration [kconst ident kto expression] = [[~{kconst}~{ident}~{kto}~{expression}]]
+FunctionDeclaration [kfn ident Formals Block] = [[~{kfn}~{ident}~{Formals}~{Block}]]
+
+Formals [@ident] = [[~{ident}]]
+
+Primary_number [@digits] = [[~{digits}]]
+Primary_arrayliteral [karr @Expressions @commas kend] = [[~{karr}~{Expressions}~{commas}~{kend}]]
+
+Expression_fieldaccess [e1 op e2] = [[~{e1}~{op}~{e2}]]
+Expression_operation [e1 op e2] = [[~{e1}~{op}~{e2}]]
+Expression_functioncall [e1 op e2] = [[~{e1}~{op}~{e2}]]
+Expression_primary [Primary] = [[~{Primary}]]
+
+Operator [k] = [[~{k}]]
+
+Phrase [x] = [[~{x}]]
+
+IfPhrase [kif Expression Block] = [[~{kif}~{Expression}~{Block}]]
+ReturnPhrase [kreturn Expression] = [[~{kreturn}~{Expression}]]
+
+Block [kdo @Phrase kend] = [[~{kdo}~{Phrase}~{kend}]]
+
+FieldName [ident] = [[~{ident}]]
+
+ident [identFirst @identRest] = [[~{identFirst}~{identRest}]]
+identFirst [c] = [[~{c}]]
+identRest [c] = [[~{c}]]
+
+

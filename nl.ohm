@@ -1,0 +1,36 @@
+NLLang {
+TopLevel = (ConstDeclaration | FunctionDeclaration)+
+ConstDeclaration = ":const" ident ":to" Expression
+FunctionDeclaration = ":fn" ident Formals Block
+
+Formals = ident*
+
+Primary =
+  | digit+ -- number
+  | ":arr" ListOf<Expression, ","> ":end" -- arrayliteral
+  | ident -- variable
+Expression =
+  | Expression ":of" Expression    -- fieldaccess
+  | Expression Operator Expression -- operation
+  | Expression ":call" Expression* ":end" -- functioncall
+  | Primary
+Operator =
+  | ":sub"
+  | ":add"
+  | ">"
+
+Phrase =
+  | IfPhrase
+  | ReturnPhrase
+IfPhrase = ":if" Expression Block
+ReturnPhrase = ":return" Expression
+
+Block = ":do" Phrase+ ":end"
+
+FieldName = ident
+ident = identFirst identRest*
+identFirst = letter | "_"
+identRest = digit | identFirst
+}
+
+

@@ -1,0 +1,2 @@
+all:
+	./prep '.' '$$' junk.ohm junk.fmt <junk.txt
