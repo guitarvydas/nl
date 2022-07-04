@@ -215,11 +215,7 @@ Arg_basic [c] = [[~{c}]]
   }
 
   function transpile () {
-      let src = document.getElementById('src').innerHTML;
-
-
-      var success = true;
-
+      let src = document.getElementById('src').value;
       let [success1, step1] = transpile1 (src, tokengrammar, tokenfmt, "keyword step");
       if (success1) {
 	  // skip step2, the step2 identity transpiler was used for development of step3

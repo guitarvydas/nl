@@ -1,4 +1,4 @@
-function expand1 (src, givengrammar, fmt, fixup) {
+function expand1 (src, givengrammar, fmt, fixup, grammarname) {
     // expand the string src given the grammar+fmt specifications
     // grammar is the pattern(s) to be matched, fmt is how the matches
     //  are glued together to make a new string
@@ -37,8 +37,14 @@ function expand1 (src, givengrammar, fmt, fixup) {
     }
 
     // Step 2a. Use Ohm-JS to pattern-match user's src string.
+    var grammar;
     try {
-        var grammar = ohm.grammar (givengrammar);
+	if (grammarname) {
+            var grammars = ohm.grammars (givengrammar);
+	    grammar = grammars [grammarname];
+	} else {    
+            grammar = ohm.grammar (givengrammar);
+	}
     } catch (err) {
         return [false, "grammar error - " + err.message, 'xxx'];
     }
