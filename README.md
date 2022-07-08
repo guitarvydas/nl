@@ -12,7 +12,7 @@ cache[num]
 Peepholing is a technique used by GCC at the assembler level (see below).  Ohm-JS allows me to apply the peephole technique to text languages (in this example, Javascript).
 
 # Source
-The original source code for (part) of this new language comes from Kinect3000 on the OhmLang discord (channel "help").
+The original source code for (part) of this new language comes from [Kinect3000 on the OhmLang discord](https://discord.com/channels/779282197152661525/779286160597319680/992714506033692692). [WrittenScript](https://github.com/KinectTheUnknown/WrittenScript
 ```
 CONST cache TO ARR ZERO SEP ONE END
 FN fibonacci num DO
